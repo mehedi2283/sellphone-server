@@ -177,6 +177,7 @@ async function run() {
         app.post("/orders", async (req, res) => {
             const order = req.body;
             const result = await ordersCollection.insertOne(order);
+
             res.send(result);
         });
 
@@ -237,6 +238,20 @@ async function run() {
             res.send(result);
         });
 
+
+
+
+        app.delete("/advertise/:id", async (req, res) => {
+            const orderID = req.params.id;
+            const query = { id: orderID };
+            const result = await allAdvertiseCollection.deleteOne(query);
+            console.log(orderID);
+            res.send(result);
+        });
+
+
+
+
         app.get("/buyers/:email", async (req, res) => {
             const email = req.params.email;
             const query = { email: email };
@@ -244,7 +259,7 @@ async function run() {
             res.send({ isBuyer: user?.role === "buyer" });
         });
 
-        app.get("/sellersVerified", async (req, res) => {
+        app.get("/sellersVerified/:email", async (req, res) => {
             const email = req.params.email;
             const query = { email: email };
             const user = await usersCollection.findOne(query);
@@ -286,6 +301,18 @@ async function run() {
             const users = await usersCollection.find(query).toArray();
 
             res.send(users);
+        });
+
+
+
+
+        app.get("/users", async (req, res) => {
+            reqEmail= req.query.email;
+            console.log(reqEmail);
+            const query = {email: reqEmail};
+            const users = await usersCollection.find(query).toArray();
+
+            res.send(users[0]);
         });
 
         app.post("/users", async (req, res) => {
@@ -369,7 +396,7 @@ async function run() {
                     updatedDoc,
                     option
                 );
-                // console.log(updatedDoc)
+                console.log(product)
                 res.send(result);
             }
         );
