@@ -40,11 +40,6 @@ function verifyJWT(req, res, next) {
 
 async function run() {
     try {
-
-
-
-
-
         //all collections
         const brandsCollection = client.db("SellPhone").collection("brands");
         const allProductsCollection = client
@@ -52,17 +47,10 @@ async function run() {
             .collection("allProducts");
         const ordersCollection = client.db("SellPhone").collection("orders");
         const usersCollection = client.db("SellPhone").collection("users");
-        const allAdvertiseCollection = client.db("SellPhone").collection("allAdvertise");
+        const allAdvertiseCollection = client
+            .db("SellPhone")
+            .collection("allAdvertise");
         const paymentCollections = client.db("SellPhone").collection("payment");
-
-
-
-
-
-
-
-
-
 
         app.get("/brands", async (req, res) => {
             const query = {};
@@ -99,31 +87,25 @@ async function run() {
             res.send(result);
         });
 
-
-        
         app.post("/payments", async (req, res) => {
-           
             const payment = req.body;
             const result = await paymentCollections.insertOne(payment);
-            
-            const id = payment.bookingId
-            const filter = {_id :ObjectId(id)}
+
+            const id = payment.bookingId;
+            const filter = { _id: ObjectId(id) };
             console.log(filter);
-            const updatedDoc ={
-                $set:{
+            const updatedDoc = {
+                $set: {
                     paid: true,
-                    transactionID: payment.transactionID
-                }
-            }
-            const updatedResult = await ordersCollection.updateOne(filter,updatedDoc)
+                    transactionID: payment.transactionID,
+                },
+            };
+            const updatedResult = await ordersCollection.updateOne(
+                filter,
+                updatedDoc
+            );
             res.send(result);
         });
-
-
-
-
-
-
 
         app.get("/all-products/:id", async (req, res) => {
             const id = req.params.id;
@@ -171,11 +153,10 @@ async function run() {
         app.get("/productsByBrand/:name", async (req, res) => {
             const name = req.params.name;
             const query = { category_name: name };
-            console.log(query)
+            console.log(query);
             const update = await allProductsCollection.find(query).toArray();
 
             res.send(update);
-
         });
         // posting orders
 
@@ -185,36 +166,21 @@ async function run() {
             res.send(result);
         });
 
-
-
-
-
-
-
         app.post("/create-payment-intent", async (req, res) => {
             const paymentData = req.body;
             // console.log(paymentData);
             const price = paymentData.resalePrice;
             const amount = price * 100;
 
-
             const paymentIntent = await stripe.paymentIntents.create({
-                currency  : 'usd',
-                amount : amount,
-                "payment_method_types" :[
-                    "card"
-                ],
-
+                currency: "usd",
+                amount: amount,
+                payment_method_types: ["card"],
             });
             res.send({
                 clientSecret: paymentIntent.client_secret,
-              });
-        })
-
-
-
-
-
+            });
+        });
 
         app.get("/jwt", async (req, res) => {
             const email = req.query.email;
@@ -228,14 +194,6 @@ async function run() {
             console.log(user);
             res.status(403).send({ accessToken: " " });
         });
-
-
-
-
-
-
-
-
 
         app.get("/users-buyers", async (req, res) => {
             const query = { role: "buyer" };
@@ -258,14 +216,12 @@ async function run() {
             res.send({ isSeller: user?.role === "seller" });
         });
 
-
         app.delete("/sellerProduct/:id", async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await allProductsCollection.deleteOne(query);
             res.send(result);
         });
-
 
         app.get("/buyers/:email", async (req, res) => {
             const email = req.params.email;
@@ -347,27 +303,12 @@ async function run() {
             res.send(op);
         });
 
-
-
-
-
-
-
-
         app.get("/orders/:id", async (req, res) => {
-            
-
-            const id = req.params.id
+            const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const op = await ordersCollection.findOne(query);
             res.send(op);
         });
-
-
-
-
-
-
 
         app.get("/myProducts", verifyJWT, async (req, res) => {
             const email = req.query.email;
@@ -384,14 +325,9 @@ async function run() {
             res.send(op);
         });
 
-
-
-
-
-
-
         app.put(
             "/advertise/:id",
+            // verifyJWT,
 
             async (req, res) => {
                 const id = req.params.id;
@@ -400,18 +336,18 @@ async function run() {
                 const product = req.body;
                 const updatedDoc = {
                     $set: {
-                        id:product._id,
-                        picture:product.picture,
-                        model_name:product.model_name,
-                        location:product.location,
-                        resale_price:product.resale_price,
-                        original_price:product.original_price,
-                        years_of_use:product.years_of_use,
-                        posted_time:product.posted_time,
-                        seller_name:product.seller_name,
-                        isVerified:product.isVerified,
-                        isBooked:product.isBooked,
-                        details:product.details,
+                        id: product._id,
+                        picture: product.picture,
+                        model_name: product.model_name,
+                        location: product.location,
+                        resale_price: product.resale_price,
+                        original_price: product.original_price,
+                        years_of_use: product.years_of_use,
+                        posted_time: product.posted_time,
+                        seller_name: product.seller_name,
+                        isVerified: product.isVerified,
+                        isBooked: product.isBooked,
+                        details: product.details,
                     },
                 };
                 const result = await allAdvertiseCollection.updateOne(
@@ -424,24 +360,11 @@ async function run() {
             }
         );
 
-        app.get("/advertise", verifyJWT, async (req, res) => {
-           
+        app.get("/advertise",  async (req, res) => {
             const query = {};
             const op = await allAdvertiseCollection.find(query).toArray();
             res.send(op);
         });
-
-
-
-
-
-
-
-
-
-
-
-
     } finally {
     }
 }
