@@ -58,6 +58,20 @@ async function run() {
             res.send(op);
         });
 
+
+
+        app.get("/advrtiseMent",  async (req, res) => {
+            const query = {};
+            const op = await allAdvertiseCollection.find(query).toArray();
+            res.send(op);
+        });
+
+
+
+
+
+
+
         app.get("/all-products", async (req, res) => {
             const id = req.query._id;
             // console.log('olllllaaaaa',id)
@@ -360,11 +374,7 @@ async function run() {
             }
         );
 
-        app.get("/advertise",  async (req, res) => {
-            const query = {};
-            const op = await allAdvertiseCollection.find(query).toArray();
-            res.send(op);
-        });
+       
     } finally {
     }
 }
