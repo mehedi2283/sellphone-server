@@ -22,7 +22,6 @@ const client = new MongoClient(uri, {
 });
 
 function verifyJWT(req, res, next) {
-    // console.log('token inside JWT',req.headers.authorization);
     const authHeader = req.headers.authorization;
     if (!authHeader) {
         return res.status(401).send("Unauthorized access");
@@ -58,36 +57,19 @@ async function run() {
             res.send(op);
         });
 
-
-
-        app.get("/advrtiseMent",  async (req, res) => {
+        app.get("/advrtiseMent", async (req, res) => {
             const query = {};
             const op = await allAdvertiseCollection.find(query).toArray();
             res.send(op);
         });
 
-
-
-
-
-
-
         app.get("/all-products", async (req, res) => {
             const id = req.query._id;
-            // console.log('olllllaaaaa',id)
+
             let query = {};
 
             const cursor = allProductsCollection.find(query);
             const allProducts = await cursor.toArray();
-
-            // const orderQuery = { orderedProductId: id };
-            // const alreadyOrdered = await ordersCollection
-            //     .find(orderQuery)
-            //     .toArray();
-            // allProducts.forEach((product) => {
-            //     const productBooked = alreadyOrdered.filter((order) =>console.log(order));
-            //     console.log(productBooked);
-            // });
 
             res.send(allProducts);
         });
@@ -129,19 +111,6 @@ async function run() {
 
             res.send(details);
         });
-
-        //     app.get('/all-products-by-brand/:name', async (req,res) =>{
-        //         let query = {}
-        //         if(req.query.brand_name){
-        //             query = {
-        //                 brand_name:req.query.brand_name
-        //             }
-        //         }
-        //         const cursor = allProductsCollection.find(query)
-        //         const allProducts = await cursor.toArray();
-        //         res.send(allProducts);
-
-        // });
 
         app.put(
             "/all-products/disable/:id",
@@ -238,9 +207,6 @@ async function run() {
             res.send(result);
         });
 
-
-
-
         app.delete("/advertise/:id", async (req, res) => {
             const orderID = req.params.id;
             const query = { id: orderID };
@@ -248,9 +214,6 @@ async function run() {
             console.log(orderID);
             res.send(result);
         });
-
-
-
 
         app.get("/buyers/:email", async (req, res) => {
             const email = req.params.email;
@@ -303,13 +266,10 @@ async function run() {
             res.send(users);
         });
 
-
-
-
         app.get("/users", async (req, res) => {
-            reqEmail= req.query.email;
+            reqEmail = req.query.email;
             console.log(reqEmail);
-            const query = {email: reqEmail};
+            const query = { email: reqEmail };
             const users = await usersCollection.find(query).toArray();
 
             res.send(users[0]);
@@ -396,12 +356,10 @@ async function run() {
                     updatedDoc,
                     option
                 );
-                console.log(product)
+                console.log(product);
                 res.send(result);
             }
         );
-
-       
     } finally {
     }
 }
