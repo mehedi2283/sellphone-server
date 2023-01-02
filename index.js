@@ -59,15 +59,24 @@ async function run() {
 
         app.get("/advrtiseMent", async (req, res) => {
             const query = {};
-            const op = await allAdvertiseCollection.find(query).toArray();
+            const op = await allAdvertiseCollection.find(query).limit(3).sort({_id:-1}).toArray();
             res.send(op);
         });
 
         app.get("/all-products", async (req, res) => {
-            const id = req.query._id;
+           
+            const search = req.query.search
+            console.log(search)
+            let query = {}
 
-            let query = {};
+             if(search){
+                query = {
+                    $text:{
+                        $search:search
+                    }
+                };
 
+             }
             const cursor = allProductsCollection.find(query);
             const allProducts = await cursor.toArray();
 
@@ -135,7 +144,17 @@ async function run() {
 
         app.get("/productsByBrand/:name", async (req, res) => {
             const name = req.params.name;
-            const query = { category_name: name };
+            const search = req.query.search
+            let query = { category_name: name };
+             
+             if(search){
+                 query = {
+                    category_name: name,
+                    $text:{
+                        $search:search
+                    }
+                };
+            }
             console.log(query);
             const update = await allProductsCollection.find(query).toArray();
 
@@ -338,6 +357,7 @@ async function run() {
                 const updatedDoc = {
                     $set: {
                         id: product._id,
+                        email: product.email,
                         picture: product.picture,
                         model_name: product.model_name,
                         location: product.location,
